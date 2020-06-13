@@ -44,7 +44,7 @@ namespace FlowersMallApi
                         //builder.WithOrigins("http://localhost:8081", "http://192.168.1.105:8081", "http://localhost:50607")
                         builder.WithOrigins("http://localhost:8081", "http://192.168.1.105:8081", "http://localhost:50607")
                                 //.AllowAnyOrigin() // 允许所有站点跨域请求（net core2.2版本后将不适用）
-                                .SetIsOriginAllowed(t => true)
+                                .SetIsOriginAllowed(t => true) // 允许所有站点跨域请求
                                 .AllowAnyMethod() // 允许所有请求方法
                                 .AllowAnyHeader() // 允许所有请求头
                                 .AllowCredentials(); // 允许Cookie信息
