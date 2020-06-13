@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowersMallApi", "FlowersMallApi\FlowersMallApi.csproj", "{5F82FEB4-939F-4A55-8D7B-8F95243CF010}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F82FEB4-939F-4A55-8D7B-8F95243CF010}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F82FEB4-939F-4A55-8D7B-8F95243CF010}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F82FEB4-939F-4A55-8D7B-8F95243CF010}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F82FEB4-939F-4A55-8D7B-8F95243CF010}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B652CEB-3D86-4BA1-85C8-CC572F5717BF}
+	EndGlobalSection
+EndGlobal
