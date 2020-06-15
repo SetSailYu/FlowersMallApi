@@ -100,15 +100,59 @@ namespace FlowersMallApi.Controllers
         }
 
         /// <summary>
-        /// 右侧推荐接口
+        /// 推荐接口
         /// </summary>
         /// <returns></returns>
         // GET: api/<controller>/Recommend
         [HttpGet]
-        public IEnumerable<CommodityTable> Recommend()
+        public JsonResult Recommend()
         {
+            // 右侧推荐接口
             //"select * from Commodity_Table where c_id=196 or c_id=195 or c_id=27"
-            return _context.CommodityTable.Where(u => u.CId == 27 || u.CId == 195 || u.CId == 196);
+            var rightrecommend = _context.CommodityTable.Where(u => u.CId == 27 || u.CId == 195 || u.CId == 196);
+            // 限时推荐接口
+            //string sql = "SELECT DISTINCT TOP 3 * FROM Recommend_Table  distinct";
+            var limitrecommend = _context.RecommendTable.Distinct().Take(3);
+            var recommend = new
+            {
+                rightrecommend,
+                limitrecommend
+            };
+            return Json(recommend);
+        }
+
+        /// <summary>
+        /// 专区接口
+        /// </summary>
+        /// <returns></returns>
+        // GET: api/<controller>/Recommend
+        [HttpGet]
+        public JsonResult Division()
+        {
+            // 爱情专区
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='鲜花' and c_series='爱情系列' ORDER BY [c_id]";
+            var lvoe = _context.CommodityTable.Where(u => u.CKind == "鲜花" && u.CSeries == "爱情系列").OrderBy(a => a.CId)
+                .Distinct().Take(8);
+            // 送长辈专区
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='鲜花' and c_series='其它系列' ORDER BY [c_id] DESC";
+            var elder = _context.CommodityTable.Where(u => u.CKind == "鲜花" && u.CSeries == "其它系列").OrderByDescending(a => a.CId)
+                .Distinct().Take(8);
+            // 永生花专区    
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='永生花'  ORDER BY [c_id]";
+            var immortal = _context.CommodityTable.Where(u => u.CKind == "永生花").OrderBy(a => a.CId)
+                .Distinct().Take(8);
+            // 礼品专区    
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='礼品'  ORDER BY [c_id]";
+            var gift = _context.CommodityTable.Where(u => u.CKind == "礼品").OrderBy(a => a.CId)
+                .Distinct().Take(8);
+            var division = new
+            {
+                lvoe,
+                elder,
+                immortal,
+                gift
+            };
+            return Json(division);
         }
 
     }
