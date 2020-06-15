@@ -160,7 +160,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/6.jpg",
                         a = "爱情鲜花专区 >>"
                     },
-                    lvoe 
+                    name = "爱情 · ",
+                    con = lvoe 
                 },
                 new {
                     hd = new
@@ -177,7 +178,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/7.jpg",
                         a = "送长辈鲜花专区 >>"
                     },
-                    elder
+                    name = "送长辈 · ",
+                    con = elder
                 },
                 new {
                     hd = new
@@ -194,7 +196,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/8.jpg",
                         a = "永生花专区 >>"
                     },
-                    immortal
+                    name = "永生花 · ",
+                    con = immortal
                 },
                 new {
                     hd = new
@@ -211,7 +214,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/9.jpg",
                         a = "礼品专区 >>"
                     },
-                    gift
+                    name = "礼品 · ",
+                    con = gift
                 }
             };
             return Json(division);
