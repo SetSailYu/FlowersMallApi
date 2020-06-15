@@ -145,9 +145,9 @@ namespace FlowersMallApi.Controllers
             //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='礼品'  ORDER BY [c_id]";
             var gift = _context.CommodityTable.Where(u => u.CKind == "礼品").OrderBy(a => a.CId)
                 .Distinct().Take(8);
-            var division = new object[]
+            var division = new
             {
-                new {
+                lvoe = new {
                     hd = new {
                         more = "更多爱情鲜花 >>",
                         h3 = new
@@ -162,7 +162,7 @@ namespace FlowersMallApi.Controllers
                     },
                     lvoe 
                 },
-                new {
+                elder = new {
                     hd = new
                     {
                         more = "更多送长辈鲜花 >>",
@@ -179,7 +179,7 @@ namespace FlowersMallApi.Controllers
                     },
                     elder
                 },
-                new {
+                immortal = new {
                     hd = new
                     {
                         more = "更多永生花 >>",
@@ -196,7 +196,7 @@ namespace FlowersMallApi.Controllers
                     },
                     immortal
                 },
-                new {
+                gift = new {
                     hd = new
                     {
                         more = "更多礼品 >>",
