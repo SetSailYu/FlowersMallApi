@@ -52,7 +52,7 @@ namespace FlowersMallApi.Controllers
             return _context.UserTable.ToList();
         }
 
-        // GET api/<controller>/5
+        // GET api/<controller>/Get/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
@@ -215,6 +215,25 @@ namespace FlowersMallApi.Controllers
                 }
             };
             return Json(division);
+        }
+
+        /// <summary>
+        /// 商品详情接口
+        /// </summary>
+        /// <returns></returns>
+        // GET: api/<controller>/Details/5
+        [HttpGet("{id}")]
+        public JsonResult Details(int id)
+        {
+            // 右侧推荐接口
+            //"select * from Commodity_Table where c_id=196 or c_id=195 or c_id=27"
+            var details = _context.CommodityTable.Where(u => u.CId == id );
+
+            var person = new
+            {
+                details
+            };
+            return Json(person);
         }
 
     }
