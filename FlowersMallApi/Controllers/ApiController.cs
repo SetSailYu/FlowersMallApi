@@ -147,10 +147,72 @@ namespace FlowersMallApi.Controllers
                 .Distinct().Take(8);
             var division = new
             {
-                lvoe,
-                elder,
-                immortal,
-                gift
+                lvoe = new {
+                    hd = new {
+                        more = "更多爱情鲜花 >>",
+                        h3 = new
+                        {
+                            a = "爱情鲜花",
+                            span = "送·让你怦然心动的人"
+                        }
+                    },
+                    bd = new {
+                        img = "http://47.112.230.140:56000/images/6.jpg",
+                        a = "爱情鲜花专区 >>"
+                    },
+                    lvoe 
+                },
+                elder = new {
+                    hd = new
+                    {
+                        more = "更多送长辈鲜花 >>",
+                        h3 = new
+                        {
+                            a = "送长辈鲜花",
+                            span = "赠·父母/恩师/长辈"
+                        }
+                    },
+                    bd = new
+                    {
+                        img = "http://47.112.230.140:56000/images/7.jpg",
+                        a = "送长辈鲜花专区 >>"
+                    },
+                    elder
+                },
+                immortal = new {
+                    hd = new
+                    {
+                        more = "更多永生花 >>",
+                        h3 = new
+                        {
+                            a = "永生花",
+                            span = "许·她一生承诺"
+                        }
+                    },
+                    bd = new
+                    {
+                        img = "http://47.112.230.140:56000/images/8.jpg",
+                        a = "永生花专区 >>"
+                    },
+                    immortal
+                },
+                gift = new {
+                    hd = new
+                    {
+                        more = "更多礼品 >>",
+                        h3 = new
+                        {
+                            a = "礼品",
+                            span = "给她·最美好的礼物"
+                        }
+                    },
+                    bd = new
+                    {
+                        img = "http://47.112.230.140:56000/images/9.jpg",
+                        a = "礼品专区 >>"
+                    },
+                    gift
+                }
             };
             return Json(division);
         }
