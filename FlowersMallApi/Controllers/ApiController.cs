@@ -111,7 +111,7 @@ namespace FlowersMallApi.Controllers
             //"select * from Commodity_Table where c_id=196 or c_id=195 or c_id=27"
             var rightrecommend = _context.CommodityTable.Where(u => u.CId == 27 || u.CId == 195 || u.CId == 196);
             // 限时推荐接口
-            //string sql = "SELECT DISTINCT TOP 3 * FROM Recommend_Table  distinct";
+            //string sql = "SELECT DISTINCT TOP 3 * FROM Recommend_Table ";
             var limitrecommend = _context.RecommendTable.Distinct().Take(3);
             var recommend = new
             {
@@ -130,21 +130,22 @@ namespace FlowersMallApi.Controllers
         public JsonResult Division()
         {
             // 爱情专区
-            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='鲜花' and c_series='爱情系列' ORDER BY [c_id]";
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind="鲜花" and c_series="爱情系列" ORDER BY [c_id]";
             var lvoe = _context.CommodityTable.Where(u => u.CKind == "鲜花" && u.CSeries == "爱情系列").OrderBy(a => a.CId)
                 .Distinct().Take(8);
             // 送长辈专区
-            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='鲜花' and c_series='其它系列' ORDER BY [c_id] DESC";
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind="鲜花" and c_series="其它系列" ORDER BY [c_id] DESC";
             var elder = _context.CommodityTable.Where(u => u.CKind == "鲜花" && u.CSeries == "其它系列").OrderByDescending(a => a.CId)
                 .Distinct().Take(8);
             // 永生花专区    
-            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='永生花'  ORDER BY [c_id]";
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind="永生花"  ORDER BY [c_id]";
             var immortal = _context.CommodityTable.Where(u => u.CKind == "永生花").OrderBy(a => a.CId)
                 .Distinct().Take(8);
             // 礼品专区    
-            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind='礼品'  ORDER BY [c_id]";
+            //string sql = "SELECT DISTINCT TOP 8 * FROM [Commodity_Table] WHERE c_kind="礼品"  ORDER BY [c_id]";
             var gift = _context.CommodityTable.Where(u => u.CKind == "礼品").OrderBy(a => a.CId)
                 .Distinct().Take(8);
+
             var division = new object[]
             {
                 new {
@@ -160,8 +161,10 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/6.jpg",
                         a = "爱情鲜花专区 >>"
                     },
+                    kind = "xh",
+                    series = 1,
                     name = "爱情 · ",
-                    con = lvoe 
+                    con = lvoe
                 },
                 new {
                     hd = new
@@ -178,6 +181,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/7.jpg",
                         a = "送长辈鲜花专区 >>"
                     },
+                    kind = "xh",
+                    series = 7,
                     name = "送长辈 · ",
                     con = elder
                 },
@@ -196,6 +201,8 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/8.jpg",
                         a = "永生花专区 >>"
                     },
+                    kind = "ys",
+                    series = 0,
                     name = "永生花 · ",
                     con = immortal
                 },
@@ -214,12 +221,15 @@ namespace FlowersMallApi.Controllers
                         img = "http://47.112.230.140:56000/images/9.jpg",
                         a = "礼品专区 >>"
                     },
+                    kind = "lp",
+                    series = 0,
                     name = "礼品 · ",
                     con = gift
                 }
             };
             return Json(division);
         }
+
 
         /// <summary>
         /// 商品详情接口
@@ -231,7 +241,7 @@ namespace FlowersMallApi.Controllers
         {
             // 右侧推荐接口
             //"select * from Commodity_Table where c_id=196 or c_id=195 or c_id=27"
-            var details = _context.CommodityTable.Where(u => u.CId == id );
+            var details = _context.CommodityTable.Where(u => u.CId == id);
 
             var person = new
             {
@@ -239,6 +249,74 @@ namespace FlowersMallApi.Controllers
             };
             return Json(person);
         }
+
+        /// <summary>
+        /// 获取分类商品接口
+        /// </summary>
+        /// <returns></returns>
+        // GET: api/<controller>/GetCommodity?kind=鲜花&series=0
+        [HttpGet]
+        public JsonResult GetCommodity([FromQuery]string kind, [FromQuery]int series)
+        {
+            switch (kind)
+            {
+                case "xh":  // 鲜花
+                    if (series == 0)
+                    {
+                        return Json( QueryCommodity("鲜花") );
+                    }
+                    else if (series < 8)
+                    {
+                        return Json( QueryCommodity("鲜花",series) );
+                    }
+                    break;
+                case "hc":  // 花材
+                    if (series == 0)
+                    {
+                        return Json( QueryCommodity("花材") );
+                    }
+                    else if (0 < series && series < 8)
+                    {
+                        return Json( QueryCommodity("花材", series));
+                    }
+                    break;
+                case "ys":  // 永生
+                    if (series == 0)
+                    {
+                        return Json( QueryCommodity("永生花") );
+                    }
+                    else if (0 < series && series < 6)
+                    {
+                        return Json( QueryCommodity("永生花", series) );
+                    }
+                    break;
+                case "lp":  // 礼品
+                    if (series == 0)
+                    {
+                        return Json( QueryCommodity("礼品") );
+                    }
+                    else if (0 < series && series < 8 )
+                    {
+                        return Json( QueryCommodity("礼品", series) );
+                    }
+                    break;
+            }
+            return Json(new { });
+        }
+        private IEnumerable<CommodityTable> QueryCommodity(string kind)
+        {
+            //string sql = "SELECT DISTINCT  * FROM [Commodity_Table] WHERE c_kind='鲜花' order by c_flower_language asc";
+            return _context.CommodityTable.Where(u => u.CKind == kind).OrderBy(a => a.CFlowerLanguage).Distinct();
+        }
+        private IEnumerable<CommodityTable> QueryCommodity(string kind, int series)
+        {
+            string[] xh = new string[] { "全部", "爱情系列", "生日系列", "婚庆系列", "生活系列", "商务系列", "殡仪系列", "其它系列" };
+            string[] hc = new string[] { "全部", "玫瑰", "康乃馨", "百合", "向日葵", "扶郎", "郁金香", "马蹄莲" };
+            string[] ys = new string[] { "全部", "经典花盒", "巨型玫瑰", "薰衣草", "永生瓶花", "特色永生花" };
+            string[] lp = new string[] { "全部", "音乐盒", "金箔花", "3D水晶内雕", "首饰/美妆", "巧克力", "公仔/睡枕", "摆件/其他" };
+            return _context.CommodityTable.Where(u => u.CKind == kind && u.CSeries == ys[series]).OrderBy(a => a.CFlowerLanguage).Distinct();
+        }
+
 
     }
 }
