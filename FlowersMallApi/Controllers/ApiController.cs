@@ -254,10 +254,14 @@ namespace FlowersMallApi.Controllers
         /// 获取分类商品接口
         /// </summary>
         /// <returns></returns>
-        // GET: api/<controller>/GetCommodity?kind=鲜花&series=0
+        // GET: api/<controller>/GetCommodity?kind=xh&series=0
         [HttpGet]
         public JsonResult GetCommodity([FromQuery]string kind, [FromQuery]int series)
         {
+            string[] xh = new string[] { "全部", "爱情系列", "生日系列", "婚庆系列", "生活系列", "商务系列", "殡仪系列", "其它系列" };
+            string[] hc = new string[] { "全部", "玫瑰", "康乃馨", "百合", "向日葵", "扶郎", "郁金香", "马蹄莲" };
+            string[] ys = new string[] { "全部", "经典花盒", "巨型玫瑰", "薰衣草", "永生瓶花", "特色永生花" };
+            string[] lp = new string[] { "全部", "音乐盒", "金箔花", "3D水晶内雕", "首饰/美妆", "巧克力", "公仔/睡枕", "摆件/其他" };
             switch (kind)
             {
                 case "xh":  // 鲜花
@@ -265,9 +269,9 @@ namespace FlowersMallApi.Controllers
                     {
                         return Json( QueryCommodity("鲜花") );
                     }
-                    else if (series < 8)
+                    else if (0 < series && series < 8)
                     {
-                        return Json( QueryCommodity("鲜花",series) );
+                        return Json( QueryCommodity("鲜花",xh[series]) );
                     }
                     break;
                 case "hc":  // 花材
@@ -277,7 +281,7 @@ namespace FlowersMallApi.Controllers
                     }
                     else if (0 < series && series < 8)
                     {
-                        return Json( QueryCommodity("花材", series));
+                        return Json( QueryCommodity("花材", hc[series]));
                     }
                     break;
                 case "ys":  // 永生
@@ -287,7 +291,7 @@ namespace FlowersMallApi.Controllers
                     }
                     else if (0 < series && series < 6)
                     {
-                        return Json( QueryCommodity("永生花", series) );
+                        return Json( QueryCommodity("永生花", ys[series]) );
                     }
                     break;
                 case "lp":  // 礼品
@@ -297,24 +301,20 @@ namespace FlowersMallApi.Controllers
                     }
                     else if (0 < series && series < 8 )
                     {
-                        return Json( QueryCommodity("礼品", series) );
+                        return Json( QueryCommodity("礼品", lp[series]) );
                     }
                     break;
             }
-            return Json(new { });
+            return Json(new { err = "错误" });
         }
         private IEnumerable<CommodityTable> QueryCommodity(string kind)
         {
             //string sql = "SELECT DISTINCT  * FROM [Commodity_Table] WHERE c_kind='鲜花' order by c_flower_language asc";
             return _context.CommodityTable.Where(u => u.CKind == kind).OrderBy(a => a.CFlowerLanguage).Distinct();
         }
-        private IEnumerable<CommodityTable> QueryCommodity(string kind, int series)
+        private IEnumerable<CommodityTable> QueryCommodity(string kind, string series)
         {
-            string[] xh = new string[] { "全部", "爱情系列", "生日系列", "婚庆系列", "生活系列", "商务系列", "殡仪系列", "其它系列" };
-            string[] hc = new string[] { "全部", "玫瑰", "康乃馨", "百合", "向日葵", "扶郎", "郁金香", "马蹄莲" };
-            string[] ys = new string[] { "全部", "经典花盒", "巨型玫瑰", "薰衣草", "永生瓶花", "特色永生花" };
-            string[] lp = new string[] { "全部", "音乐盒", "金箔花", "3D水晶内雕", "首饰/美妆", "巧克力", "公仔/睡枕", "摆件/其他" };
-            return _context.CommodityTable.Where(u => u.CKind == kind && u.CSeries == ys[series]).OrderBy(a => a.CFlowerLanguage).Distinct();
+            return _context.CommodityTable.Where(u => u.CKind == kind && u.CSeries == series).OrderBy(a => a.CFlowerLanguage).Distinct();
         }
 
 
