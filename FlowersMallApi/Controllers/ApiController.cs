@@ -87,13 +87,11 @@ namespace FlowersMallApi.Controllers
         {
             var person = new
             {
-                imgList = new string[] {
-                    "http://47.112.230.140:56000/images/1.jpg",
-                    "http://47.112.230.140:56000/images/2.jpg",
-                    "http://47.112.230.140:56000/images/3.jpg",
-                    "http://47.112.230.140:56000/images/4.jpg",
-                    "http://47.112.230.140:56000/images/5.jpg"
-                }
+                indexImgList = new string[] { "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg" },
+                xhImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
+                hcImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
+                ysImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
+                lpImgList = new string[] { "17.jpg", "18.jpg"}
             };
 
             return Json(person);
