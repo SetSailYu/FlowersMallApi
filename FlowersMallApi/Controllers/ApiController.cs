@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nancy.Json;
 using System.Text;
+using Glimpse.AspNet.Model;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -322,15 +323,14 @@ namespace FlowersMallApi.Controllers
         /// <returns></returns>
         // HttpPost: api/<controller>/Login?id=1&&name=yu&&pass=11
         [HttpPost]
-        public JsonResult Login(FromLogin fromLogin)
-        //public JsonResult Login([FromQuery]int id, [FromQuery]string name, [FromQuery]string pass)
+        public JsonResult Login([FromBody]FromLogin fromLogin)
         {
             //  0 登录失败/已在线   1 密码错误    2 账号不存在
             string token = "";
             int uid = -1;  // 用户id
             string hint = "用户类型错误";
             int state = 3;
-            if (fromLogin.id == (int)Rank.User)   // 普通用户
+            if (fromLogin.rank == (int)Rank.User)   // 普通用户
             {
                 if (_context.UserTable.Where(u => u.UName == fromLogin.name).Count() > 0)
                 {
@@ -358,7 +358,7 @@ namespace FlowersMallApi.Controllers
                     else { hint = "密码错误"; state = 1; }
                 }
                 else {  hint = "该账号不存在"; state = 2; }
-            }else if (fromLogin.id == (int)Rank.Admin)   // 管理员
+            }else if (fromLogin.rank == (int)Rank.Admin)   // 管理员
             {
                 if (_context.AdminTable.Where(u => u.AId == fromLogin.name).Count() > 0)
                 {
@@ -386,12 +386,13 @@ namespace FlowersMallApi.Controllers
                 }
                 else { hint = "该账号不存在"; state = 2; }
             }
-            return Json(new { login = new { hint, state } });
+            return Json(new { login = new { hint, state} });
         }
-        public class FromLogin {
-            public int id;
-            public string name;
-            public string pass;
+        public class FromLogin
+        {
+            public int rank { get; set; }
+            public string name { get; set; }
+            public string pass { get; set; }
         }
         private string GetToken(Rank identity, string name, string pass)
         {
@@ -413,7 +414,7 @@ namespace FlowersMallApi.Controllers
         /// <returns></returns>
         // HttpPost: api/<controller>/Quit?id=5&&rank=0&&token=ce1f5e85-5733-41ce-8bbf-79752b31317c30-8ba784f6a0be
         [HttpPost]
-        public JsonResult Quit(FromQuit fromQuit)
+        public JsonResult Quit([FromBody]FromQuit fromQuit)
         //public JsonResult Quit([FromQuery]int id, [FromQuery]int rank, [FromQuery]string token)
         {
             bool state = false;
@@ -430,9 +431,9 @@ namespace FlowersMallApi.Controllers
         }
         public class FromQuit
         {
-            public int id;
-            public int rank;
-            public string token;
+            public int id { get; set; }
+            public int rank { get; set; }
+            public string token { get; set; }
         }
 
 
