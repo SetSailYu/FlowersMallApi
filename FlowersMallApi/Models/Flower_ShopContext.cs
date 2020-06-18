@@ -18,6 +18,7 @@ namespace FlowersMallApi.Models
         public virtual DbSet<AddressTable> AddressTable { get; set; }
         public virtual DbSet<AdminTable> AdminTable { get; set; }
         public virtual DbSet<CommodityTable> CommodityTable { get; set; }
+        public virtual DbSet<LoginUserTable> LoginUserTable { get; set; }
         public virtual DbSet<LvmessageTable> LvmessageTable { get; set; }
         public virtual DbSet<OrderTable> OrderTable { get; set; }
         public virtual DbSet<RecommendTable> RecommendTable { get; set; }
@@ -142,6 +143,22 @@ namespace FlowersMallApi.Models
                     .HasMaxLength(10);
 
                 entity.Property(e => e.CStock).HasColumnName("c_stock");
+            });
+
+            modelBuilder.Entity<LoginUserTable>(entity =>
+            {
+                entity.HasKey(e => new { e.UId, e.URank });
+
+                entity.ToTable("LoginUser_Table");
+
+                entity.Property(e => e.UId).HasColumnName("U_id");
+
+                entity.Property(e => e.URank).HasColumnName("U_rank");
+
+                entity.Property(e => e.UToken)
+                    .IsRequired()
+                    .HasColumnName("U_token")
+                    .HasMaxLength(225);
             });
 
             modelBuilder.Entity<LvmessageTable>(entity =>

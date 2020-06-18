@@ -10,6 +10,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nancy.Json;
+using System.Text;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -91,7 +92,7 @@ namespace FlowersMallApi.Controllers
                 xhImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
                 hcImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
                 ysImgList = new string[] { "14.jpg", "15.jpg", "16.jpg" },
-                lpImgList = new string[] { "17.jpg", "18.jpg"}
+                lpImgList = new string[] { "17.jpg", "18.jpg" }
             };
 
             return Json(person);
@@ -265,41 +266,41 @@ namespace FlowersMallApi.Controllers
                 case "xh":  // 鲜花
                     if (series == 0)
                     {
-                        return Json( QueryCommodity("鲜花") );
+                        return Json(QueryCommodity("鲜花"));
                     }
                     else if (0 < series && series < 8)
                     {
-                        return Json( QueryCommodity("鲜花",xh[series]) );
+                        return Json(QueryCommodity("鲜花", xh[series]));
                     }
                     break;
                 case "hc":  // 花材
                     if (series == 0)
                     {
-                        return Json( QueryCommodity("花材") );
+                        return Json(QueryCommodity("花材"));
                     }
                     else if (0 < series && series < 8)
                     {
-                        return Json( QueryCommodity("花材", hc[series]));
+                        return Json(QueryCommodity("花材", hc[series]));
                     }
                     break;
                 case "ys":  // 永生
                     if (series == 0)
                     {
-                        return Json( QueryCommodity("永生花") );
+                        return Json(QueryCommodity("永生花"));
                     }
                     else if (0 < series && series < 6)
                     {
-                        return Json( QueryCommodity("永生花", ys[series]) );
+                        return Json(QueryCommodity("永生花", ys[series]));
                     }
                     break;
                 case "lp":  // 礼品
                     if (series == 0)
                     {
-                        return Json( QueryCommodity("礼品") );
+                        return Json(QueryCommodity("礼品"));
                     }
-                    else if (0 < series && series < 8 )
+                    else if (0 < series && series < 8)
                     {
-                        return Json( QueryCommodity("礼品", lp[series]) );
+                        return Json(QueryCommodity("礼品", lp[series]));
                     }
                     break;
             }
@@ -314,6 +315,127 @@ namespace FlowersMallApi.Controllers
         {
             return _context.CommodityTable.Where(u => u.CKind == kind && u.CSeries == series).OrderBy(a => a.CFlowerLanguage).Distinct();
         }
+
+        /// <summary>
+        /// 登录接口
+        /// </summary>
+        /// <returns></returns>
+        // HttpPost: api/<controller>/Login?id=1&&name=yu&&pass=11
+        [HttpPost]
+        public JsonResult Login(FromLogin fromLogin)
+        //public JsonResult Login([FromQuery]int id, [FromQuery]string name, [FromQuery]string pass)
+        {
+            //  0 登录失败/已在线   1 密码错误    2 账号不存在
+            string token = "";
+            int uid = -1;  // 用户id
+            string hint = "用户类型错误";
+            int state = 3;
+            if (fromLogin.id == (int)Rank.User)   // 普通用户
+            {
+                if (_context.UserTable.Where(u => u.UName == fromLogin.name).Count() > 0)
+                {
+                    if (_context.UserTable.Where(u => u.UName == fromLogin.name && u.UPassword == fromLogin.pass).Count() > 0)
+                    {
+                        // 获取用户ID
+                        foreach (var u in _context.UserTable.Where(u => u.UName == fromLogin.name && u.UPassword == fromLogin.pass).Select(s => s.UId)){ uid = u; }
+                        // 查询该用户是否已登录
+                        if (_context.LoginUserTable.Where(u => u.UId == uid && u.URank == (int)Rank.User).Count() > 0)
+                        {
+                            hint = "该用户已在线"; state = 0;
+                        }
+                        else
+                        {
+                            token = GetToken(Rank.User, fromLogin.name, fromLogin.pass);   // 生成token值
+                            LoginUserTable newLoginUser = new LoginUserTable() { UId = uid, URank = (int)Rank.User, UToken = token };
+                            _context.LoginUserTable.Add(newLoginUser);  
+                            if (_context.SaveChanges() > 0)   // 保存登录用户信息
+                            {
+                                return Json(new { login = new { uid = uid, rank = (int)Rank.User, token, state = 99 } });
+                            }
+                            hint = "登录失败"; state = 0;
+                        }
+                    }
+                    else { hint = "密码错误"; state = 1; }
+                }
+                else {  hint = "该账号不存在"; state = 2; }
+            }else if (fromLogin.id == (int)Rank.Admin)   // 管理员
+            {
+                if (_context.AdminTable.Where(u => u.AId == fromLogin.name).Count() > 0)
+                {
+                    if (_context.AdminTable.Where(u => u.AId == fromLogin.name && u.APassword == fromLogin.pass).Count() > 0)
+                    {
+                        uid = 0;
+                        // 查询该管理员是否已登录
+                        if (_context.LoginUserTable.Where(u => u.UId == uid && u.URank == (int)Rank.Admin).Count() > 0)
+                        {
+                            hint = "该管理员已在线"; state = 0;
+                        }
+                        else
+                        {
+                            token = GetToken(Rank.Admin, fromLogin.name, fromLogin.pass);   // 生成token值
+                            LoginUserTable newLoginUser = new LoginUserTable() { UId = uid, URank = (int)Rank.Admin, UToken = token };
+                            _context.LoginUserTable.Add(newLoginUser);
+                            if (_context.SaveChanges() > 0)   // 保存登录管理员信息
+                            {
+                                return Json(new { login = new { uid = uid, rank = (int)Rank.User, token, state = 99 } });
+                            }
+                            hint = "登录失败"; state = 0;
+                        }
+                    }
+                    else { hint = "密码错误"; state = 1; }
+                }
+                else { hint = "该账号不存在"; state = 2; }
+            }
+            return Json(new { login = new { hint, state } });
+        }
+        public class FromLogin {
+            public int id;
+            public string name;
+            public string pass;
+        }
+        private string GetToken(Rank identity, string name, string pass)
+        {
+            string s = name + "+" + pass + "|" + (int)identity;
+            byte[] byteArray = Encoding.Default.GetBytes(s.ToString());
+            string str = "-";
+            for (int i = 0; i < byteArray.Length; i++)
+            {
+                str += byteArray[i].ToString("x");
+            }
+            string token = Guid.NewGuid().ToString();
+            token = token.Insert(token.LastIndexOf('-'), str);
+            return token;
+        }
+
+        /// <summary>
+        /// 退出接口
+        /// </summary>
+        /// <returns></returns>
+        // HttpPost: api/<controller>/Quit?id=5&&rank=0&&token=ce1f5e85-5733-41ce-8bbf-79752b31317c30-8ba784f6a0be
+        [HttpPost]
+        public JsonResult Quit(FromQuit fromQuit)
+        //public JsonResult Quit([FromQuery]int id, [FromQuery]int rank, [FromQuery]string token)
+        {
+            bool state = false;
+            if (_context.LoginUserTable.Where(u => u.UId == fromQuit.id && u.UToken == fromQuit.token).Count() > 0)
+            {
+                LoginUserTable newLoginUser = new LoginUserTable() { UId = fromQuit.id, URank = fromQuit.rank, UToken = fromQuit.token };
+                _context.LoginUserTable.Remove(newLoginUser);
+                if (_context.SaveChanges() > 0)   // 删除登录信息
+                {
+                    state = true;
+                }
+            }
+            return Json(new { state });
+        }
+        public class FromQuit
+        {
+            public int id;
+            public int rank;
+            public string token;
+        }
+
+
 
 
     }
