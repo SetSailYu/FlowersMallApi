@@ -321,7 +321,7 @@ namespace FlowersMallApi.Controllers
         /// 登录接口
         /// </summary>
         /// <returns></returns>
-        // HttpPost: api/<controller>/Login?id=1&&name=yu&&pass=11
+        // HttpPost: api/<controller>/Login?id=0&&name=yu&&pass=11
         [HttpPost]
         public JsonResult Login([FromBody]FromLogin fromLogin)
         {
@@ -341,7 +341,14 @@ namespace FlowersMallApi.Controllers
                         // 查询该用户是否已登录
                         if (_context.LoginUserTable.Where(u => u.UId == uid && u.URank == (int)Rank.User).Count() > 0)
                         {
-                            hint = "该用户已在线"; state = 0;
+                            token = GetToken(Rank.User, fromLogin.name, fromLogin.pass);   // 生成token值
+                            LoginUserTable updateLoginUser = new LoginUserTable() { UId = uid, URank = (int)Rank.User, UToken = token };
+                            _context.LoginUserTable.Update(updateLoginUser);
+                            if (_context.SaveChanges() > 0)   // 保存登录用户信息
+                            {
+                                return Json(new { login = new { uid = uid, rank = (int)Rank.User, token, state = 99 } });
+                            }
+                            hint = "登录失败"; state = 0;
                         }
                         else
                         {
@@ -368,7 +375,14 @@ namespace FlowersMallApi.Controllers
                         // 查询该管理员是否已登录
                         if (_context.LoginUserTable.Where(u => u.UId == uid && u.URank == (int)Rank.Admin).Count() > 0)
                         {
-                            hint = "该管理员已在线"; state = 0;
+                            token = GetToken(Rank.Admin, fromLogin.name, fromLogin.pass);   // 生成token值
+                            LoginUserTable newLoginUser = new LoginUserTable() { UId = uid, URank = (int)Rank.Admin, UToken = token };
+                            _context.LoginUserTable.Update(newLoginUser);
+                            if (_context.SaveChanges() > 0)   // 保存登录管理员信息
+                            {
+                                return Json(new { login = new { uid = uid, rank = (int)Rank.User, token, state = 99 } });
+                            }
+                            hint = "登录失败"; state = 0;
                         }
                         else
                         {
@@ -412,15 +426,14 @@ namespace FlowersMallApi.Controllers
         /// 退出接口
         /// </summary>
         /// <returns></returns>
-        // HttpPost: api/<controller>/Quit?id=5&&rank=0&&token=ce1f5e85-5733-41ce-8bbf-79752b31317c30-8ba784f6a0be
+        // HttpPost: api/<controller>/Quit?id=5&&rank=0
         [HttpPost]
         public JsonResult Quit([FromBody]FromQuit fromQuit)
-        //public JsonResult Quit([FromQuery]int id, [FromQuery]int rank, [FromQuery]string token)
         {
             bool state = false;
-            if (_context.LoginUserTable.Where(u => u.UId == fromQuit.id && u.UToken == fromQuit.token).Count() > 0)
+            if (_context.LoginUserTable.Where(u => u.UId == fromQuit.id && u.URank == fromQuit.rank).Count() > 0)
             {
-                LoginUserTable newLoginUser = new LoginUserTable() { UId = fromQuit.id, URank = fromQuit.rank, UToken = fromQuit.token };
+                LoginUserTable newLoginUser = new LoginUserTable() { UId = fromQuit.id, URank = fromQuit.rank };
                 _context.LoginUserTable.Remove(newLoginUser);
                 if (_context.SaveChanges() > 0)   // 删除登录信息
                 {
@@ -433,7 +446,6 @@ namespace FlowersMallApi.Controllers
         {
             public int id { get; set; }
             public int rank { get; set; }
-            public string token { get; set; }
         }
 
 
