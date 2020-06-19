@@ -448,6 +448,25 @@ namespace FlowersMallApi.Controllers
             public int rank { get; set; }
         }
 
+        /// <summary>
+        /// 花语大全接口
+        /// </summary>
+        /// <returns></returns>
+        // GET: api/<controller>/FlowerLanguage
+        [HttpGet]
+        public JsonResult FlowerLanguage()
+        {
+            //SELECT [c_name], [c_flower_language], [c_flower_material], [c_series], [c_pic], [c_introduce] FROM [Commodity_Table]";
+            var flowerLanguage = _context.CommodityTable.Where(u => u.CKind == "鲜花" || u.CKind == "永生花" ).Select(s => new { 
+                s.CName, s.CFlowerLanguage, s.CFlowerMaterial, s.CSeries, s.CPic, s.CIntroduce 
+            } ).Distinct().Take(50);
+            
+            return Json(flowerLanguage);
+        }
+
+
+
+
 
 
 
